@@ -3,7 +3,6 @@ name = "keios-dynabuffers-rhea"
 version = "0.1.0"
 description = ""
 authors = ["fridayy <benjamin.krenn@leftshift.one>"]
-packages = [{include ="keios"}]
 
 [tool.poetry.dependencies]
 python = "^3.7"
