@@ -1,0 +1,114 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "de.skuzzle:semantic-version:1.2.0"
+        classpath "net.researchgate:gradle-release:2.6.0"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4"
+    }
+}
+
+allprojects {
+    apply plugin: "net.researchgate.release"
+    apply plugin: "java"
+
+    release {
+        tagTemplate = '$name-java-v$version'
+        newVersionCommitMessage = "Release"
+
+        failOnCommitNeeded = true
+        failOnPublishNeeded = true
+        failOnSnapshotDependencies = false
+        failOnUnversionedFiles = false
+        failOnUpdateNeeded = true
+    }
+}
+
+subprojects {
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+
+    apply plugin: "maven-publish"
+    apply plugin: "com.jfrog.bintray"
+    apply plugin: "groovy"
+
+    afterReleaseBuild.dependsOn bintrayUpload
+
+    task prepareVersions() {
+        doLast {
+            def snapshotString = "-SNAPSHOT"
+            def currentVersion = project.version.toString()
+            def releaseVersion = currentVersion.replace(snapshotString, "")
+            if (project.hasProperty("release.scope") && project.property("release.scope") == "major") {
+                releaseVersion = de.skuzzle.semantic.Version.parseVersion(releaseVersion).nextMajor().toString()
+            } else if (project.hasProperty("release.scope") && project.property("release.scope") == "patch") {
+                releaseVersion = de.skuzzle.semantic.Version.parseVersion(releaseVersion).nextPatch().toString()
+            }
+            def devVersion = "${de.skuzzle.semantic.Version.parseVersion(releaseVersion).nextMinor().toString()}${snapshotString}"
+
+            logger.quiet("Current version for ${name}: ${currentVersion}")
+            logger.quiet("Release version for ${name}: ${releaseVersion}")
+            logger.quiet("Dev version for ${name}: ${devVersion}")
+
+            file(project.buildDir).mkdirs()
+            new File(project.buildDir, "current-version.txt").write(currentVersion)
+            new File(project.buildDir, "release-version.txt").write(releaseVersion)
+            new File(project.buildDir, "dev-version.txt").write(devVersion)
+        }
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                groupId = project.group
+                artifactId = project.name
+                from components.java
+                pom.withXml {
+                    Node root = asNode()
+                    root.appendNode("name", "GAIA keios dynabuffer protocol")
+                    root.appendNode("description", "GAIA keios communication protocol")
+                    root.appendNode("url", "https://github.com/leftshiftone/keios-dynabuffers")
+
+                    Node licenses = root.appendNode("licenses")
+                    Node license = licenses.appendNode("license")
+                    license.appendNode("name", "The Apache License, Version 2.0")
+                    license.appendNode("url", "http://www.apache.org/licenses/LICENSE-2.0.txt")
+
+                    Node developers = root.appendNode("developers")
+                    Node developer = developers.appendNode("developer")
+                    developer.appendNode("id", "leftshiftone")
+                    developer.appendNode("name", "Leftshift One")
+                    developer.appendNode("email", "contact@leftshift.one")
+                    developer.appendNode("organization", "Leftshift One Software GmbH")
+                    developer.appendNode("organizationUrl", "https://www.leftshift.one")
+
+                    Node scm = root.appendNode("scm")
+                    scm.appendNode("connection", "scm:git:git://github.com/leftshiftone/keios-dynabuffers.git")
+                    scm.appendNode("developerConnection", "scm:git:ssh://github.com:leftshiftone/keios-dynabuffers.git")
+                    scm.appendNode("url", "https://github.com/leftshiftone/keios-dynabuffers")
+                }
+            }
+        }
+    }
+
+    bintray {
+        logger.info "Bintray deploy with user [${System.getenv('BINTRAY_USER')}] while working on ${project.name}"
+        user = System.getenv('BINTRAY_USER')
+        key = System.getenv('BINTRAY_KEY')
+        publish = true
+        pkg {
+            repo = "keios-dynabuffers"
+            name = "${project.group}.${project.name}"
+            userOrg = "leftshiftone"
+            licenses = ["Apache-2.0"]
+            vcsUrl = "https://github.com/leftshiftone/keios-dynabuffers.git"
+            publications = ["mavenJava"]
+        }
+    }
+}
