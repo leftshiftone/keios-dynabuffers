@@ -1,16 +1,16 @@
+class TokenizerMessage(primary) {
+    message: TokenizerMessageType
+}
+
+union TokenizerMessageType {
+    TokenizerResponse
+    TokenizerRequest
+}
+
 class TokenizerRequest {
-    text: string
+    sentence: string
 }
 
 class TokenizerResponse {
-    sentences: [string]
-}
-
-union RheaMessageType {
-    TokenizerRequest
-    TokenizerResponse
-}
-
-class TokenizerMessage(primary) {
-    message: RheaMessageType
+  tokens: [string]
 }

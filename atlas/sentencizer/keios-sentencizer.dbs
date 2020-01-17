@@ -1,16 +1,16 @@
+class SentencizerMessage(primary) {
+    message: SentencizerMessageType
+}
+
+union SentencizerMessageType {
+    SentencizerResponse
+    SentencizerRequest
+}
+
 class SentencizerRequest {
-    text: string
+    sentence: string
 }
 
 class SentencizerResponse {
-    sentences: [string]
-}
-
-union RheaMessageType {
-    SentencizerRequest
-    SentencizerResponse
-}
-
-class SentencizerMessage(primary) {
-    message: RheaMessageType
+  tokens: [string]
 }
