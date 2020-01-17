@@ -1,3 +1,4 @@
 rootProject.name = 'keios-dynabuffers'
 include 'rhea'
+include 'atlas'
 

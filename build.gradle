@@ -15,11 +15,11 @@ buildscript {
 allprojects {
     apply plugin: "net.researchgate.release"
     apply plugin: "java"
-    
+
     release {
         tagTemplate = '$name-java-v$version'
         newVersionCommitMessage = "Release"
-        
+
         failOnCommitNeeded = true
         failOnPublishNeeded = true
         failOnSnapshotDependencies = false
@@ -33,14 +33,13 @@ subprojects {
         jcenter()
         mavenCentral()
     }
-    
+
     apply plugin: "maven-publish"
     apply plugin: "com.jfrog.bintray"
-    apply plugin: "groovy"
     apply plugin: "java"
-    
+
     afterReleaseBuild.dependsOn bintrayUpload
-    
+
     task prepareVersions() {
         doLast {
             def snapshotString = "-SNAPSHOT"
@@ -52,18 +51,18 @@ subprojects {
                 releaseVersion = de.skuzzle.semantic.Version.parseVersion(releaseVersion).nextPatch().toString()
             }
             def devVersion = "${de.skuzzle.semantic.Version.parseVersion(releaseVersion).nextMinor().toString()}${snapshotString}"
-            
+
             logger.quiet("Current version for ${name}: ${currentVersion}")
             logger.quiet("Release version for ${name}: ${releaseVersion}")
             logger.quiet("Dev version for ${name}: ${devVersion}")
-            
+
             file(project.buildDir).mkdirs()
             new File(project.buildDir, "current-version.txt").write(currentVersion)
             new File(project.buildDir, "release-version.txt").write(releaseVersion)
             new File(project.buildDir, "dev-version.txt").write(devVersion)
         }
     }
-    
+
     publishing {
         publications {
             mavenJava(MavenPublication) {
@@ -75,12 +74,12 @@ subprojects {
                     root.appendNode("name", "GAIA keios dynabuffer protocol")
                     root.appendNode("description", "GAIA keios communication protocol")
                     root.appendNode("url", "https://github.com/leftshiftone/keios-dynabuffers")
-                    
+
                     Node licenses = root.appendNode("licenses")
                     Node license = licenses.appendNode("license")
                     license.appendNode("name", "The Apache License, Version 2.0")
                     license.appendNode("url", "http://www.apache.org/licenses/LICENSE-2.0.txt")
-                    
+
                     Node developers = root.appendNode("developers")
                     Node developer = developers.appendNode("developer")
                     developer.appendNode("id", "leftshiftone")
@@ -88,7 +87,7 @@ subprojects {
                     developer.appendNode("email", "contact@leftshift.one")
                     developer.appendNode("organization", "Leftshift One Software GmbH")
                     developer.appendNode("organizationUrl", "https://www.leftshift.one")
-                    
+
                     Node scm = root.appendNode("scm")
                     scm.appendNode("connection", "scm:git:git://github.com/leftshiftone/keios-dynabuffers.git")
                     scm.appendNode("developerConnection", "scm:git:ssh://github.com:leftshiftone/keios-dynabuffers.git")
@@ -97,7 +96,7 @@ subprojects {
             }
         }
     }
-    
+
     bintray {
         logger.info "Bintray deploy with user [${System.getenv('BINTRAY_USER')}] while working on ${project.name}"
         user = System.getenv('BINTRAY_USER')
@@ -112,18 +111,30 @@ subprojects {
             publications = ["mavenJava"]
         }
     }
-    
-    sourceSets.main.resources.srcDirs += new File("keios_dynabuffers_${project.name}")
-    
+
     jar {
         excludes = ["**/*.py"]
     }
-    
-    task moveResources {
-        doLast {
-            ant.move(file: "${buildDir}/resources/main/", tofile: "${project.buildDir}/resources/main/keios_dynabuffers_${project.name}")
+
+    task moveResources(type: Copy) {
+        from ("${project.rootDir}/${project.name}/keios_dynabuffers_${project.name}") {
+            exclude "build/"
+            exclude "dist/"
+            exclude "**/*.gradle"
+            exclude "**/*.properties"
+            exclude "**/*.lock"
+            exclude "**/*.toml"
         }
+        into "${project.buildDir}/resources/main/keios_dynabuffers_${project.name}"
     }
-    
+
     jar.dependsOn(moveResources)
+
+    task copyPoetryFiles(type: Copy) {
+        from ("${project.rootDir}/${project.name}") {
+            include "pyproject.toml"
+            include "poetry.lock"
+        }
+        into "${project.buildDir}/resources/main/"
+    }
 }
