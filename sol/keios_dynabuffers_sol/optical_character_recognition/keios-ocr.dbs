@@ -3,8 +3,8 @@ class OCRMessage(primary) {
 }
 
 union OCRMessageType {
-    TokenizerResponse
-    TokenizerRequest
+    OCRRequest
+    OCRResponse
 }
 
 class OCRRequest {
