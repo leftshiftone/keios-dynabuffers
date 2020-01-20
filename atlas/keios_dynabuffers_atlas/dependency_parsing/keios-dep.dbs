@@ -3,11 +3,15 @@ class DEPMessage(primary) {
 }
 
 union DEPMessageType {
-    NERResponse
-    NERRequest
+    DEPRequest
+    DEPResponse
 }
 
-class DEP {
+class DEPRequest {
+    text: string
+}
+
+class DEPResponse {
   dep: [DEPResult]
 }
 

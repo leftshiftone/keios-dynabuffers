@@ -8,7 +8,7 @@ union SentencizerMessageType {
 }
 
 class SentencizerRequest {
-    sentence: string
+    text: string
 }
 
 class SentencizerResponse {

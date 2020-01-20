@@ -8,7 +8,7 @@ union TokenizerMessageType {
 }
 
 class TokenizerRequest {
-    sentence: string
+    text: string
 }
 
 class TokenizerResponse {
