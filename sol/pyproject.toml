@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "keios-dynabuffers-rhea"
-version = "1.0.0"
+name = "keios-dynabuffers-sol"
+version = "0.1.0"
 description = ""
 authors = ["fridayy <benjamin.krenn@leftshift.one>"]
 
