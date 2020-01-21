@@ -11,7 +11,9 @@ Currently only manual release is possible:
 
 _requires bintray credentials_
 
-`./gradlew clean build bintrayUpload`
+`
+$ cd atlas
+$ gradle clean build bintrayUpload`
 
 **Python**
 
