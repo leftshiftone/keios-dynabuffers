@@ -3,17 +3,27 @@ class SEMMessage(primary) {
 }
 
 union SEMMessageType {
-    SEMReadRequest
-    SEMReadResponse
-    SEMWriteRequest
-    SEMWriteResponse
+   SEMQueryReadRequest
+   SEMPhraseReadRequest
+   SEMWriteRequest
+   SEMReadResponse
+   SEMWriteResponse
 }
 
-class SEMReadRequest {
+class SEMQueryReadRequest {
    field: string
    query: string
    minimumScore: float
    limit: int
+}
+
+class SEMPhraseReadRequest {
+    terms: [string]
+    field: string
+    inOrder: boolean
+    slop: int
+    minimumScore: float
+    limit: int
 }
 
 class SearchResult {
