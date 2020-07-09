@@ -1,23 +1,26 @@
-# keios-dynabuffers
+# OUT OF SUPPORT
+**This repository is no longer supported and therefore read-only and archived. Date: 09.07.2020**
+  
+~~# keios-dynabuffers~~
 
-Hodgepodge of [dynabuffers](https://github.com/leftshiftone/dynabuffers) schemata used for keios inter-process-communication between polyglot systems. 
-Formerly known as [keios-protocol](https://github.com/leftshiftone/keios-protocol).
+~~Hodgepodge of [dynabuffers](https://github.com/leftshiftone/dynabuffers) schemata used for keios inter-process-communication between polyglot systems.~~ 
+~~Formerly known as [keios-protocol](https://github.com/leftshiftone/keios-protocol).~~
 
-### Release
+~~### Release~~
 
-Currently only manual release is possible:
+~~Currently only manual release is possible:~~
 
-**JVM**
+~~**JVM**~~
 
-_requires bintray credentials_
+~~_requires bintray credentials_~~
 
 `
 $ cd atlas
 $ gradle clean build bintrayUpload`
 
-**Python**
+~~**Python**~~
 
-_required pypi.org credentials_
+~~_required pypi.org credentials_~~
 
 ```$sh
 $ cd atlas
